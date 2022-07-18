@@ -1,14 +1,21 @@
 security:
     enable_authenticator_manager: true
 
+#     https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+
+
     password_hashers:
         App\Entity\User\User:
             algorithm: auto
             cost: 12
+        App\Entity\Admin\Admin:
+            algorithm: auto
+            cost: 12
+
 
     providers:
         webant_user_provider:
-            id: App\Security\User\UserProvider
+            id: App\Security\Admin\AdminProvider
 
 
     firewalls:

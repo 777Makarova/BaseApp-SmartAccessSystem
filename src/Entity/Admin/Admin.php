@@ -2,19 +2,26 @@
 
 namespace App\Entity\Admin;
 
+
+
+use App\Controller\Admin\CreateAdmin;
 use App\Entity\BaseEntity;
-//use App\Repository\UserRepository;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use App\UserBundle\Model\BaseAdmin;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     collectionOperations: [
-        'post',
+        'post'=>[
+            'controller' => CreateAdmin::class,
+//            "security" => "is_granted('ROLE_ADMIN')"
+
+        ],
         'get'
     ],
     itemOperations: [
@@ -25,16 +32,28 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[ORM\Entity()]
-abstract class Admin extends BaseEntity implements PasswordHasherInterface, UserInterface
+class Admin extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Column(type: "string", unique: true, nullable: false)]
+//    #[Groups(["GetUser", "GetObjUser", "SetUser"])]
+    #[Assert\NotBlank]
     public string $username;
 
-    #[ORM\Column(type: 'json')]
-    public array $roles = [];
 
-    #[ORM\Column(type: 'string')]
-    public string $password;
+    #[ORM\Column(type: "array")]
+//    #[Groups(["GetUser", "SetUser:admin"])]
+    public array $roles;
+
+    /**
+     * The salt to use for hashing.
+     */
+    protected ?string $salt = null;
+
+    #[ORM\Column(type: "string", nullable: false)]
+    #[Assert\Length(min: 5, minMessage: "min 5 symbols")]
+    protected string $password;
+
+
 
     /**
      * @see UserInterface
@@ -95,5 +114,19 @@ abstract class Admin extends BaseEntity implements PasswordHasherInterface, User
     {
         return $this->username;
     }
+
+
+    public function getSalt(): ?string
+    {
+        return $this->salt;
+    }
+
+
+
+
+
+
+
+
 
 }

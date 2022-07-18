@@ -75,7 +75,7 @@ class Token extends BaseEntity
     #[Assert\NotNull]
     public string $user_id;
 
-    #[ORM\Column(type:'string')]
+    #[ORM\Column(type:'string', length: '16777215')]
     #[Assert\NotNull]
     public string $token;
 

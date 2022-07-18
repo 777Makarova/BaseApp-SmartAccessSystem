@@ -5,8 +5,6 @@ namespace App\OpenApi;
 use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use App\OpenApi\ConfirmCode\ExpandConfirmCodeOpenApi;
-use App\OpenApi\File\ExpandFileOpenApi;
-use App\OpenApi\News\ExpandNewsOpenApi;
 use App\OpenApi\Oauth\ExpandOAuthOpenApi;
 use App\OpenApi\User\ExpandUserOpenApi;
 
@@ -14,10 +12,8 @@ class OpenApiFactory implements OpenApiFactoryInterface
 {
     private const EXPANDS = [
         ExpandUserOpenApi::class,
-        ExpandNewsOpenApi::class,
         ExpandOAuthOpenApi::class,
         ExpandConfirmCodeOpenApi::class,
-        ExpandFileOpenApi::class
     ];
 
     public function __construct(
