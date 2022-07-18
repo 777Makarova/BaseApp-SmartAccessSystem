@@ -1,0 +1,47 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    rate_limiter:
+        anonymous_api:
+            # use 'sliding_window' if you prefer that policy
+            policy: 'fixed_window'
+            limit: 2000
+            interval: '60 minutes'
+
+        high_load:
+            policy: 'fixed_window'
+            limit: 1000
+            interval: '30 minutes'
+
+        personal_sensitive:
+            policy: 'fixed_window'
+            limit: 1000
+            interval: '120 minutes'
+
+        authenticated_api:
+            policy: 'token_bucket'
+            limit: 5000
+            rate: { interval: '15 minutes', amount: 500 }
+
+    secret: '%env(APP_SECRET)%'
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
+    trusted_hosts: '%env(TRUSTED_HOSTS)%'
+
+    # See https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#headers
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto']
+    #csrf_protection: true
+    #http_method_override: true
+
+    # Enables session support. Note that the session will ONLY be started if you read or write from it.
+    # Remove or comment this section to explicitly disable session support.
+    session:
+        handler_id: null
+        cookie_secure: auto
+        cookie_samesite: lax
+
+    fragments:
+        hinclude_default_template: hinclude.html.twig
+
+    #esi: true
+    #fragments: true
+    php_errors:
+        log: true

@@ -1,0 +1,6 @@
+services:
+  doctrine.fixtures.loader:
+    class: Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader
+    public: true
+    arguments:
+      [ '@service_container' ]

@@ -1,0 +1,9 @@
+
+Уважаемый {{ user.firstName? user.firstName  : user.username }}!
+<br>
+Чтобы подтвердить, что это ваш аккаунт, введите следующий код:
+
+<br>
+{#<a href="{{ url }}">{{ url }}</a>#}
+{# TODO: fix that link #}
+{{ app.request.getSchemeAndHttpHost() }}/activate/{{ code.code }}

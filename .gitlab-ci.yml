@@ -1,0 +1,80 @@
+variables:
+  HELM_VERSION: 3.6.3
+  KUBERNETES_VERSION: 1.15.12
+
+  DOCKER_CI_IMAGE: php:test_$CI_COMMIT_SHA
+
+  GIT_DEPTH: 0
+
+stages:
+  - build
+  - test
+  - deploy
+
+
+before_script:
+  - docker login gitlab.webant.ru:5001 -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+
+build:
+  stage: build
+  only:
+    - merge_request
+  tags:
+    - docker-shell
+  artifacts:
+    paths:
+      - app.tar.gz
+  script:
+    - docker build -f Dockerfile.test -t $DOCKER_CI_IMAGE --target=api_platform_php .
+  after_script:
+    - docker save $DOCKER_CI_IMAGE | gzip > app.tar.gz
+
+test:
+  stage: test
+  needs:
+    - build
+  only:
+    - merge_request
+  before_script:
+    - docker load --input app.tar.gz
+  tags:
+    - docker-shell
+  artifacts:
+    paths:
+      - .database_url
+  script:
+    - docker run --env CI_TEST_DATABASE_URL --env CI_PROJECT_NAME --env CI_COMMIT_SHORT_SHA --rm $DOCKER_CI_IMAGE ./ci_test.sh
+
+
+deploy-dev:
+  image: "gitlab.webant.ru:5001/devops/deploy-image:1.0-alpine"
+  stage: deploy
+  only:
+    - merge_request
+  tags:
+    - infra-runner
+  when: manual
+  script:
+    - export BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | tr / -)
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - kubectl create secret -n "$BRANCH_NAME-$CI_PROJECT_NAME" generic "gitlab-registry-${CI_PROJECT_PATH_SLUG}" --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson -o yaml --dry-run=client | kubectl replace -n "$BRANCH_NAME-$CI_PROJECT_NAME" --force -f -
+    - cd $CI_PROJECT_DIR && pwd && ls -lsah
+    - export kub_domine=$BRANCH_NAME.$CI_PROJECT_NAME.kuber-dev.webant.ru
+    - echo "$kub_domine"
+    - export kub_domine_regx=${kuber-dev.webant.ru//./$'\.'}
+    - export corsAllowOrigin="^https?://.*?\.${kub_domine_regx}$"
+    - export trustedHost="^localhost|api|45.76.85.250|127.0.0.1|0.0.0.0|bachata|caddy|$BRANCH_NAME.baseapp.kuber-dev.webant.ru|baseapp-deploy-api-platform"
+    - export RELEASE_NAME=${HELM_RELEASE_NAME:-$CI_ENVIRONMENT_SLUG}
+    - echo "corsAllowOrigin=${corsAllowOrigin} trustedHost= ${trustedHost} RELEASE_NAME= {$RELEASE_NAME}"
+    - helm dependency update ./helm/api-platform
+    - echo "$RELEASE_NAME"
+    - |
+      helm upgrade --install \
+            --atomic \
+            --debug \
+            --namespace=$BRANCH_NAME-$CI_PROJECT_NAME \
+            baseapp-deploy \
+            ./helm/api-platform
+  environment:
+    name: development
+    url: http://$CI_PROJECT_PATH_SLUG.$KUBE_INGRESS_BASE_DOMAIN

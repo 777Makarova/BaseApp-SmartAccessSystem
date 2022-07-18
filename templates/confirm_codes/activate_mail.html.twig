@@ -1,0 +1,9 @@
+
+{# TODO: make base template #}
+Уважаемый {{ user.firstName? user.firstName : user.username }}!
+<br>
+Для активации вашего аккаунта перейдите по ссылке
+<br>
+{#<a href="{{ url }}">{{ url }}</a>#}
+{# TODO: fix that link #}
+{{ app.request.getSchemeAndHttpHost() }}/activate/{{ code.code }}

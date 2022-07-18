@@ -1,0 +1,121 @@
+php:
+  image:
+    repository: "gitlab.webant.ru:5001/base-apps/backend/base-app-backend/php"
+    imagePullPolicy: Always
+    tag: "test_c0a226b78f852e1a5b1e21a716bd438129c8b926"
+  imagePullSecrets: base-pull-secret-backend
+  kub_domine: baseapp.kuber-dev.webant.ru
+  trustedHost: "^localhost|api|45.76.85.250|127.0.0.1|0.0.0.0|bachata|caddy|baseapp.kuber-dev.webant.ru|baseapp-deploy-api-platform"
+  replicaCount: 1
+  appEnv: dev
+  appDebug: "1"
+  appSecret: ""
+  corsAllowOrigin: "^https?://.*?\\.chart-example\\.local$"
+  trustedProxies:
+    - "127.0.0.1"
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+
+caddy:
+  imagePullSecrets: base-pull-secret-backend
+  image:
+    repository: "gitlab.webant.ru:5001/base-apps/backend/base-app-backend/caddy"
+    imagePullPolicy: Always
+    tag: "dev-latest"
+  replicaCount: 1
+
+
+# You may prefer using the managed version in production: https://mercure.rocks
+mercure:
+  publicUrl: https://chart-example.local/.well-known/mercure
+  jwtSecret: "!ChangeMe!"
+  corsAllowedOrigins: "^https?://.*?\\.chart-example\\.local$"
+
+mysql:
+  enabled: true
+  auth:
+    username: web
+    password: ant
+    database: base
+    rootPassword: webant
+
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: baseapp.kuber-test.webant.ru
+      paths:
+        - path: /
+          serviceName: nioly-deploy-api-platform
+          servicePort: 80
+
+        - path: /oauth  
+          serviceName: nioly-deploy-api-platform
+          servicePort: 80
+          
+        - path: /_profiler
+          serviceName: nioly-deploy-api-platform
+          servicePort: 80
+
+          
+  tls:
+    - secretName: basetls
+      hosts:
+        - baseapp.kuber-dev.webant.ru
+
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 20
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+replicaCount: 1
+
+imagePullSecrets:
+  - name:  base-pull-secret-backend

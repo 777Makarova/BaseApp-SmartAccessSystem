@@ -1,0 +1,18 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in(__DIR__)
+    ->exclude('var')
+    ->exclude('vendor')
+    ->exclude('docker')
+;
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@Symfony' => true,
+        '@DoctrineAnnotation' => true,
+        '@PSR12' => true,
+        '@PHP80Migration' => true,
+    ])
+    ->setFinder($finder)
+;

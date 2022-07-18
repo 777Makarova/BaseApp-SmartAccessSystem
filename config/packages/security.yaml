@@ -1,0 +1,50 @@
+security:
+    enable_authenticator_manager: true
+
+    password_hashers:
+        App\Entity\User\User:
+            algorithm: auto
+            cost: 12
+
+    providers:
+        webant_user_provider:
+            id: App\Security\User\UserProvider
+
+
+    firewalls:
+        oauth_token:
+            pattern: ^/oauth/v2/token
+            security: false
+
+        oauth_authorize:
+            pattern: ^/oauth/v2/auth
+            form_login:
+                provider: webant_user_provider
+                check_path: /oauth/v2/auth_login_check
+                login_path: /oauth/v2/auth_login
+                use_referer: true
+#            anonymous: true
+
+        api_token:
+            pattern: ^/api/token
+            security: false
+        api:
+            pattern: ^/
+            stateless: true
+            lazy: true
+            oauth2: true
+            security: true
+            provider: webant_user_provider
+
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+
+
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }

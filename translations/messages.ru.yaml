@@ -1,0 +1,34 @@
+user:
+  authorization:
+    errors:
+      invalid_code: неверный параметр code
+      unable_get_user_info: не удалось получить информацию о пользователе
+      code_not_found: код не найден
+      code_is_expired: Срок действия кода истек
+      user_not_found: пользователь не найден
+    confirmation:
+      messages:
+        email_confirmed: email адрес успешно подтвержден
+        phone_confirmed: телефон успешно подтвержден
+        password_changed: пароль успешно изменен
+        activated: аккаунт успешно активирован
+      errors:
+        unknown_code_type: неизвестный тип кода подтверждения
+        code_limit: вы уже запросили код, попробуйте позже
+        no_new_password: укажите новый пароль
+        no_phone: нужно указать номер телефона
+        no_sender_code: не могу найти отправителя кода
+        no_email_from_code: не удается получить электронную почту из кода
+        no_phone_from_code: не могу получить телефон из кода
+    vk:
+      errors:
+        not_user: Пользователь не был получен с вк
+  registration:
+    errors:
+      phone_required: Необходимо указать телефон
+      user_exists: Пользователь уже существует
+file:
+  creating:
+    errors:
+      no_file: файл не получен или отсутсвует
+      unsupported_format: неподдерживаемый формат файла

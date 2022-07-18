@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "api-platform.fullname" . }}
+  labels:
+    {{- include "api-platform.labels" . | nindent 4 }}
+data:
+  database-url: $DATABASE_URL
+  CONTAINER_REGISTRY_BASE: gitlab.webant.ru:5001/base-apps/backend/base-app-backend
+  CONTAINER_REGISTRY_TAG: dev-latest
+  TRUSTED_PROXIES: 127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+  TRUSTED_HOSTS: ^(localhost|caddy)$
+  MERCURE_SUBSCRIBE_URL: https://localhost/.well-known/mercure
+  APP_ENV: dev
+  APP_SECRET: sspudge
+  DATABASE_URL: mysql://root:webant@baseapp-deploy-mysql:3306/base
+  CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+  MERCURE_PUBLISH_URL: http://caddy/.well-known/mercure
+  MERCURE_JWT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXJjdXJlIjp7InB1Ymxpc2giOltdfX0.Oo0yg7y4yMa1vr_bziltxuTCqb8JVHKxp-f_FwwOim0
+  MAILER_URL: null://localhost
+  VK_CLIENT_ID: "1234567"
+  VK_CLIENT_SECRET: "1234567"
+  VK_REDIRECT_URI: https://base.dev5.webant.ru
+  FB_CLIENT_ID: "1234567"
+  FB_CLIENT_SECRET: "123456"
+  FB_REDIRECT_URI: https://base.dev5.webant.ru/
+  APPLE_CLIENT_ID: com.base.app
+  APPLE_TEAM_ID: "12345"
+  APPLE_KEY_FILE_ID: "12345"
+  APPLE_KEY_FILE_PATH: /srv/api/apple.key
+  APPLE_REDIRECT_URI: https://base.dev5.webant.ru
+  LOCK_DSN: semaphore
+  SMS_API_KEY: "1"
+  SMS_IS_TEST: "1"
+  OAUTH_PRIVATE_KEY: /srv/api/private.key
+  OAUTH_PRIVATE_KEY_PASS: supportWebant
+  OAUTH_ENCRYPTION_KEY: 3YSGT+/eW1+dehdJXAa5lGCrE8B2BflwZ4YPesBmT+w=
+  OAUTH_PUBLIC_KEY: /srv/api/public.key

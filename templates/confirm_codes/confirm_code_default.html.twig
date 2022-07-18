@@ -1,0 +1,12 @@
+
+Уважаемый {{ user.firstName? user.firstName : user.username }}!
+<br>
+Для подтверждения операции введите следующий код:
+{{ code.code }}
+<br>
+или перейдите по ссылке
+<br>
+{# TODO: fix that link #}
+{{ app.request.getSchemeAndHttpHost() }}/activate/{{ code.code }}
+<br>
+Если вы не запрашивали подтверждение, просто проигнорируйте данное сообщение

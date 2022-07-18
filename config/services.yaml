@@ -1,0 +1,164 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+
+    sender_name: webant@example.com
+
+    sms_api_key: '%env(SMS_API_KEY)%'
+    sms_from: '%env(SMS_FROM)%'
+    sms_is_test: '%env(SMS_IS_TEST)%'
+
+    vk.client.id: '%env(VK_CLIENT_ID)%'
+    vk.client.secret: '%env(VK_CLIENT_SECRET)%'
+    vk.redirect.uri: '%env(VK_REDIRECT_URI)%'
+
+    google.api_key: '%env(GOOGLE_API_KEY)%'
+    google.client.id: '%env(GOOGLE_CLIENT_ID)%'
+    google.client.secret: '%env(GOOGLE_CLIENT_SECRET)%'
+    google.client.redirect_url: '%env(GOOGLE_REDIRECT_URL)%'
+
+    fb.client.id: '%env(FB_CLIENT_ID)%'
+    fb.client.secret: '%env(FB_CLIENT_SECRET)%'
+    fb.redirect.uri: '%env(FB_REDIRECT_URI)%'
+
+    apple.client.id: '%env(APPLE_CLIENT_ID)%'
+    apple.client.ios.id: '%env(APPLE_CLIENT_ID_IOS)%'
+    apple.team.id: '%env(APPLE_TEAM_ID)%'
+    apple.key_file.id: '%env(APPLE_KEY_FILE_ID)%'
+    apple.key_file.path: '%env(APPLE_KEY_FILE_PATH)%'
+
+    apple.client.redirect_uri: '%env(APPLE_REDIRECT_URI)%'
+
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+            - '../src/OAuth2'
+            - '../src/Serializer'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\UserBundle\Controller\:
+        resource: '../src/UserBundle/Controller/'
+        tags: [ 'controller.service_arguments' ]
+
+    api_platform.serializer.normalizer.collection:
+        class: App\Serializer\ApiNormalizer
+        arguments:
+            - '@api_platform.resource_class_resolver'
+            - '%api_platform.collection.pagination.page_parameter_name%'
+        tags:
+            - { name: 'serializer.normalizer'}
+
+    Lcobucci\JWT\Configuration:
+        factory: [ '@App\Factory\JWTConfigurationFactory', '__invoke' ]
+        arguments: [ '%env(resolve:OAUTH_PRIVATE_KEY)%', '%env(resolve:OAUTH_PUBLIC_KEY)%', '%env(resolve:OAUTH_PRIVATE_KEY_PASS)%' ]
+
+
+
+    App\OpenApi\OpenApiFactory:
+        decorates: 'api_platform.openapi.factory'
+        arguments: [ '@App\OpenApi\OpenApiFactory.inner' ]
+        autoconfigure: false
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    App\Swagger\SwaggerDecorator:
+        decorates: 'api_platform.swagger.normalizer.api_gateway'
+        arguments: [ '@App\Swagger\SwaggerDecorator.inner' ]
+        autoconfigure: false
+
+    App\Serializer\User\UserContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\User\UserContextBuilder.inner' ]
+        autoconfigure: false
+
+    App\Serializer\LocalizationContextBuilder:
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\LocalizationContextBuilder.inner' ]
+        autoconfigure: false
+
+    App\Service\Code\CodeService:
+        autowire: true
+        autoconfigure: false
+        calls:
+            - ['setSenders', [!tagged user_activate.senders]]
+
+    webant_user_manager:
+        class: App\Service\User\UserManager
+        arguments: ['@doctrine.orm.entity_manager']
+
+    App\Service\Code\SmsSender:
+        tags: {name: user_activate.senders }
+
+    App\Service\Code\EmailSender:
+        tags: {name: user_activate.senders }
+
+    app.locale.listener:
+        class: App\EventSubscriber\LocaleListener
+        autoconfigure: true
+        autowire: true
+        tags:
+            - { name: kernel.event_subscriber }
+
+    App\UserBundle\EventListener\UserResolveListener:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags:
+            - { name: kernel.event_listener, event: league.oauth2_server.event.user_resolve, method: onUserResolve}
+
+    App\UserBundle\EventListener\TokenResolveListener:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@security.token_storage'
+        tags:
+            - { name: kernel.event_listener, event: league.oauth2_server.event.token_request_resolve, method: onTokenResolve}
+
+    oauth.grant_extension.external:
+        class: App\OAuth2\ExternalGrantExtension\ExternalGrantExtension
+        arguments: ["@service_container"]
+        autoconfigure: false
+        tags:
+            - { name: 'fos_oauth_server.grant_extension', uri: 'urn:auth:external' }
+
+#    webant_oauth_server.server:
+#        class: OAuth2\OAuth2
+#        arguments: [ '@webant_oauth_server.storage.default' ]
+#        public: true
+#
+#    webant_oauth_server.storage.default:
+#        class: WebAnt\OAuthServerBundle\Storage\OAuthStorage
+#        public: true
+#        arguments:
+#            - '@webant_oauth_server.client_manager.default'
+#            - '@webant_oauth_server.access_token_manager.default'
+#            - '@webant_oauth_server.refresh_token_manager.default'
+#            - '@webant_oauth_server.auth_code_manager.default'
+#            - '@webant_user.user_provider.username_email'
+#            - '@security.encoder_factory'
+#        calls:
+#            - setGrantExtension: [ 'urn:auth:external', '@oauth.grant_extension.external' ]
+#
+#    App\OAuth2\ExternalService\:
+#        resource: '../src/OAuth2/ExternalService/'
+#        tags: [ 'controller.service_arguments' ]

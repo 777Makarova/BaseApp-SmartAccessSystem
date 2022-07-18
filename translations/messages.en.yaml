@@ -1,0 +1,34 @@
+user:
+  authorization:
+    errors:
+      invalid_code: invalid code
+      unable_get_user_info: unable get user info
+      code_not_found: code not found
+      code_is_expired: code is expired
+      user_not_found: user not found
+    confirmation:
+      messages:
+        email_confirmed: email address successfully confirmed
+        phone_confirmed: phone successfully confirmed
+        password_changed: password changed successfully
+        activated: account has been successfully activated
+      errors:
+        unknown_code_type: Unknown type of confirmation code
+        no_new_password: Provide a new password
+        code_limit: you have already requested the code, please try again later
+        no_phone: phone number is required
+        no_sender_code: cannot find sender for code
+        no_email_from_code: cannot retrieve email from code
+        no_phone_from_code: cannot retrieve phone from code
+    vk:
+      errors:
+        not_user: is not vk user
+  registration:
+    errors:
+      phone_required: phone is required
+      user_exists: user already exists
+file:
+  creating:
+    errors:
+      no_file: file not received or missing
+      unsupported_format: unsupported file format
