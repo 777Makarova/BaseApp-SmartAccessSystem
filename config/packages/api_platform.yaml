@@ -227,7 +227,7 @@ api_platform:
 
     mercure:
         # Enabled by default with installed symfony/mercure-bundle
-        enabled: false
+        enabled: true
 
         # The URL sent in the Link HTTP header. If not set, will default to MercureBundle's default hub URL.
         hub_url: null

@@ -37,7 +37,8 @@ use App\Controller\TokenJWT\CheckJWTController;
     ],
     itemOperations: ['get'=>[
         'path'=>'checkJWT'
-    ]]
+    ]],
+    mercure: true
 
 )]
 #[ORM\Entity]
