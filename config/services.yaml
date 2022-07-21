@@ -57,6 +57,11 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
+
+    App\Command\:
+        resource: '../src/Command/'
+        tags: ['controller.service_arguments']
+
     App\UserBundle\Controller\:
         resource: '../src/UserBundle/Controller/'
         tags: [ 'controller.service_arguments' ]

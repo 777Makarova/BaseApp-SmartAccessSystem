@@ -18,10 +18,6 @@ class ConfirmationService
 
     public function updateUserConfirmationCheck(User $data, User $previous_data)
     {
-//        if ($data->getEmail() !== $previous_data->getEmail()) {
-//            $this->startConfirmEmail($data);
-//            $data->isEmailConfirmed = false;
-//        }
 
         if ($data->phone !== $previous_data->phone) {
             $this->startConfirmPhone($data);

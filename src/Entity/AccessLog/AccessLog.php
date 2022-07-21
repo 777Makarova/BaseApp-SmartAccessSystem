@@ -10,34 +10,35 @@ use App\Controller\TokenJWT\CheckJWTController;
 
 #[ApiResource (
     collectionOperations: [
-        'post'=>[
-            'deserialize' => false,
-            'controller' => CheckJWTController::class,
-            'path'=>'/checkJWT',
-            'openapi_context' =>[
-                'requestBody' =>[
-                    'description' => 'Check JWT Token',
-                    'required' => true,
-                    'content'=>[
-                        'multipart/form-data'=>[
-                            'schema'=>[
-                                'type' => 'object',
-                                'properties' => [
-                                    'JWT' => [
-                                        'type' => 'string',
-                                        'description' => 'Write the JWT'
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]
-    ],
-    itemOperations: ['get'=>[
-        'path'=>'checkJWT'
+//        'post'=>[
+//            'deserialize' => false,
+//            'controller' => CheckJWTController::class,
+//            'path'=>'/checkJWT',
+//            'openapi_context' =>[
+//                'requestBody' =>[
+//                    'description' => 'Check JWT Token',
+//                    'required' => true,
+//                    'content'=>[
+//                        'multipart/form-data'=>[
+//                            'schema'=>[
+//                                'type' => 'object',
+//                                'properties' => [
+//                                    'JWT' => [
+//                                        'type' => 'string',
+//                                        'description' => 'Write the JWT'
+//                                    ]
+//                                ]
+//                            ]
+//                        ]
+//                    ]
+//                ]
+//            ]
+//        ]
+//    ],
+    'get'=>[
+        'path'=>'AccessLogs'
     ]],
+    itemOperations: ['get'],
     mercure: true
 
 )]

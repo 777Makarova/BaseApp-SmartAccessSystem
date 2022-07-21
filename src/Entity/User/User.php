@@ -148,20 +148,5 @@ class User extends BaseUser implements UserInterface, PasswordAuthenticatedUserI
     }
 
 
-//    /**
-//     * @return \DateTimeInterface
-//     */
-//    public function getDateUpdate(): \DateTimeInterface
-//    {
-//        return $this->dateUpdate;
-//    }
-//
-//    /**
-//     * @param \DateTimeInterface $dateUpdate
-//     */
-//    public function setDateUpdate(\DateTimeInterface $dateUpdate): void
-//    {
-//        $this->dateUpdate = $dateUpdate;
-//    }
 
 }

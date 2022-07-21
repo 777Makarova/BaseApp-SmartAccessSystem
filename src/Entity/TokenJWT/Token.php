@@ -38,31 +38,31 @@ use Symfony\Component\Validator\Constraints as Assert;
                 ]
             ]
         ],
-//        'CheckToken'=>[
-//            'method'=> 'POST',
-//            'path' => '/checkToken',
-//            'deserialize' => false,
-//            'controller' => CreateJWTController::class,
-//            'openapi_context' =>[
-//                'requestBody' =>[
-//                    'description' => 'Проверить токен',
-//                    'required' => true,
-//                    'content'=>[
-//                        'multipart/form-data'=>[
-//                            'schema'=>[
-//                                'type' => 'object',
-//                                'properties' => [
-//                                    'JWT' => [
-//                                        'type' => 'string',
-//                                        'description' => 'Введите токен'
-//                                    ]
-//                                ]
-//                            ]
-//                        ]
-//                    ]
-//                ]
-//            ]
-//        ],
+        'CheckToken'=>[
+            'method'=> 'POST',
+            'path' => '/checkToken',
+            'deserialize' => false,
+            'controller' => CreateJWTController::class,
+            'openapi_context' =>[
+                'requestBody' =>[
+                    'description' => 'Проверить токен',
+                    'required' => true,
+                    'content'=>[
+                        'multipart/form-data'=>[
+                            'schema'=>[
+                                'type' => 'object',
+                                'properties' => [
+                                    'JWT' => [
+                                        'type' => 'string',
+                                        'description' => 'Введите токен'
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ],
 
     ],
     itemOperations: ['get', 'delete']
