@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Device\DeviceUsingLog;
+use PHPMailer\PHPMailer\PHPMailer;
 use Symfony\Component\Console\Command\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -71,43 +72,43 @@ class UpdateDeviceStatusCommand extends Command
         return 1;
     }
 
-//    public function sendEmail(string $email)
-//    {
-//        $text = "Отдай девайс, поганец!!!! Если не вернешь его в течении 2 (двух) дней, я наложу на тебя проклятие!!!";
-//
-//        $mail = new PHPMailer(true);
-//        $mail->IsSMTP();
-//        $mail->Host = 'smtp.gmail.com';
-//        $mail->SMTPAuth = true;
-//        $mail->Username = 'afterhattt@gmail.com';
-//        $mail->Password = 'something';
-//        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-//        $mail->Port = 465;
-//
-//
-//        $mail->CharSet = 'UTF-8';
-//        $mail->setLanguage('ru', 'phpmailer/language/');
-//        $mail->IsHTML(true);
-//
-//        $mail->setFrom('mail@yandex.ru', 'anonymous');
-//        $mail->addAddress($email);
-//
-//        $mail->Subject = 'Верни девайс!!!';
-//
-//
-//        $mail->AddAttachment($_FILES['file']['tmp_name'], $_FILES['file']['name']);
-//
-//
-//        $body = '<p>' . $text . '</p>';
-//
-//        $mail->Body = $body;
-//
-//        $mail->send();
-//
-//
-//    }
-//
-//
+    public function sendEmail(string $email)
+    {
+        $text = "Отдай девайс, поганец!!!! Если не вернешь его в течении 2 (двух) дней, я наложу на тебя проклятие!!!";
+
+        $mail = new PHPMailer(true);
+        $mail->IsSMTP();
+        $mail->Host = '%env(MAILER_HOST)%';
+        $mail->SMTPAuth = true;
+        $mail->Username = '%env(MAILER_NAME)%';
+        $mail->Password = '%env(MAILER_PASSWORD)%';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        $mail->Port = 465;
+
+
+        $mail->CharSet = 'UTF-8';
+        $mail->setLanguage('ru', 'phpmailer/language/');
+        $mail->IsHTML(true);
+
+        $mail->setFrom('mail@yandex.ru', 'anonymous');
+        $mail->addAddress($email);
+
+        $mail->Subject = 'Верни девайс!!!';
+
+
+        $mail->AddAttachment($_FILES['file']['tmp_name'], $_FILES['file']['name']);
+
+
+        $body = '<p>' . $text . '</p>';
+
+        $mail->Body = $body;
+
+        $mail->send();
+
+
+    }
+
+
 
 
 
