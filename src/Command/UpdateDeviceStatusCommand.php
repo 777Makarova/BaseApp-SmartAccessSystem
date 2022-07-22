@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Device\DeviceUsingLog;
 use Symfony\Component\Console\Command\Command;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,18 +27,25 @@ class UpdateDeviceStatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $logRepository = $this->entityManager->getRepository(\App\Entity\Device\DeviceUsingLog::class);
-
+        $logRepository = $this->entityManager->getRepository(DeviceUsingLog::class);
+        $logs = $logRepository->findAll();
 
         $now = new \DateTime(date("Y-m-d H:i:s"));
 
-        foreach ($logRepository as $log) {
+        foreach ($logs as $log) {
 
-            $pickUpDate = \DateTime::createFromFormat('Y-m-d H:i:s', $log->pickUpDate);
+            $pickUpDate =$log->pickUpDate;
             $diff = $now->diff($pickUpDate);
-            $timeCriteria = \DateTime::createFromFormat("Y-m-d H:i:s", '0-0-1 0:0:0');
 
-            if ($diff->format('%Y-%m-%d %H:%i:%s') >= $timeCriteria) {
+            /*
+             * Этот блок отвечает за то чтобы получить время эквивалетное одному дню.
+             * Он нелепый, найти способ заменить
+             */
+            $arg1 = new \DateTime("2022-07-23");
+            $timeCriteria= $arg1->diff(new \DateTime("2022-07-22"));
+
+
+            if ($diff->format('%Y-%m-%d %H:%i:%s') >= $timeCriteria->format('%Y-%m-%d %H:%i:%s')) {
 
                 $device = $log->getDevice();
                 $device->takenАway = 1;
@@ -45,7 +53,8 @@ class UpdateDeviceStatusCommand extends Command
 
                 $this->entityManager->persist($device);
                 $this->entityManager->flush();
-                $this->sendEmail('example@example.com')
+//                $this->sendEmail('example@example.com')
+
 
             } else {
 
@@ -55,46 +64,57 @@ class UpdateDeviceStatusCommand extends Command
 
                 $this->entityManager->persist($device);
                 $this->entityManager->flush();
+
             }
 
-
         }
-        $output->writeln('all is fine ');
-
+        return 1;
     }
 
-    public function sendEmail(string $email)
-    {
-        $text = "Отдай девайс, поганец!!!! Если не вернешь его в течении 2 (двух) дней, я наложу на тебя проклятие!!!";
+//    public function sendEmail(string $email)
+//    {
+//        $text = "Отдай девайс, поганец!!!! Если не вернешь его в течении 2 (двух) дней, я наложу на тебя проклятие!!!";
+//
+//        $mail = new PHPMailer(true);
+//        $mail->IsSMTP();
+//        $mail->Host = 'smtp.gmail.com';
+//        $mail->SMTPAuth = true;
+//        $mail->Username = 'afterhattt@gmail.com';
+//        $mail->Password = 'something';
+//        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+//        $mail->Port = 465;
+//
+//
+//        $mail->CharSet = 'UTF-8';
+//        $mail->setLanguage('ru', 'phpmailer/language/');
+//        $mail->IsHTML(true);
+//
+//        $mail->setFrom('mail@yandex.ru', 'anonymous');
+//        $mail->addAddress($email);
+//
+//        $mail->Subject = 'Верни девайс!!!';
+//
+//
+//        $mail->AddAttachment($_FILES['file']['tmp_name'], $_FILES['file']['name']);
+//
+//
+//        $body = '<p>' . $text . '</p>';
+//
+//        $mail->Body = $body;
+//
+//        $mail->send();
+//
+//
+//    }
+//
+//
 
-        $mail = new PHPMailer(true);
-        $mail->IsSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'afterhattt@gmail.com';
-        $mail->Password = 'something';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port = 465;
 
 
-        $mail->CharSet = 'UTF-8';
-        $mail->setLanguage('ru', 'phpmailer/language/');
-        $mail->IsHTML(true);
-
-        $mail->setFrom('mail@yandex.ru', 'anonymous');
-        $mail->addAddress($email);
-
-        $mail->Subject = 'Верни девайс!!!';
 
 
-        $mail->AddAttachment($_FILES['file']['tmp_name'], $_FILES['file']['name']);
 
 
-        $body = '<p>' . $text . '</p>';
 
-        $mail->Body = $body;
+}
 
-        $mail->send();
-
-
-    }
